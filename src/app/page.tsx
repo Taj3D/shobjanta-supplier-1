@@ -12,7 +12,6 @@ import {
   Check,
   Truck,
   ShieldCheck,
-  Users,
   Lightbulb,
   Star,
   Gift,
@@ -149,7 +148,7 @@ function openWhatsApp(message: string) {
 
 /* ─── Main Page Component ─── */
 export default function Home() {
-  const { items, addItem, removeItem, clearCart, getTotal, getItemCount } = useCartStore();
+  const { items, addItem, removeItem, updateQuantity, clearCart, getTotal, getItemCount } = useCartStore();
 
   // Modal states
   const [cartOpen, setCartOpen] = useState(false);
@@ -360,6 +359,7 @@ export default function Home() {
     if (customerName.trim()) msg += `\n👤 নাম: ${customerName.trim()}`;
     if (customerAddress.trim()) msg += `\n📍 ঠিকানা: ${customerAddress.trim()}`;
     msg += `\n🗺️ জেলা: ${selectedDistrict || "নির্ধারিত হয়নি"}`;
+    msg += `\n🚚 ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}`;
     msg += `\n💵 পেমেন্ট: ক্যাশ অন ডেলিভারি`;
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
@@ -382,6 +382,7 @@ export default function Home() {
     if (customerName.trim()) msg += `\n👤 নাম: ${customerName.trim()}`;
     if (customerAddress.trim()) msg += `\n📍 ঠিকানা: ${customerAddress.trim()}`;
     msg += `\n🗺️ জেলা: ${selectedDistrict || "নির্ধারিত হয়নি"}`;
+    msg += `\n🚚 ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}`;
     msg += `\n💵 পেমেন্ট: ক্যাশ অন ডেলিভারি`;
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
@@ -752,7 +753,7 @@ export default function Home() {
             <div className="offer-gradient rounded-3xl p-6 md:p-8 text-center text-white">
               <h3 className="text-xl md:text-2xl font-bold mb-2">🔥 লিমিটেড টাইম অফার 🔥</h3>
               <p className="text-sm md:text-base opacity-90 mb-1">
-                যেকোনো ইলেকট্রনিক্স পণ্যে ৫% ছাড় + ফ্রি ডেলিভারি
+                যেকোনো ইলেকট্রনিক্স পণ্যে ৫% ছাড় + যশোর শহরে ফ্রি ডেলিভারি
               </p>
               <p className="text-sm opacity-80 mb-3">
                 💳 কিস্তিতে কিনতে চাইলে WhatsApp এ যোগাযোগ করুন
@@ -851,12 +852,12 @@ export default function Home() {
       {/* ─── FOOTER ─── */}
       <footer className="border-t border-border mt-auto py-6 px-4 text-center text-xs text-muted-foreground bg-white/80" style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}>
         <p>
-          © ২০২৬ <strong>সবজান্তা সাপ্লাইয়ার</strong> – বিশ্বস্ত মাল্টি-ক্যাটাগরি স্টোর
+          © {new Date().getFullYear()} <strong>সবজান্তা সাপ্লাইয়ার</strong> – বিশ্বস্ত মাল্টি-ক্যাটাগরি স্টোর
         </p>
         <p className="mt-1">
           <a href="https://shobjanta-supplier.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">🔥 বেস্ট অফার</a> &nbsp;|&nbsp;
           <a href="#products" className="text-primary hover:underline">প্রিমিয়াম পণ্য</a> &nbsp;|&nbsp;
-          <a href="javascript:void(0)" onClick={() => setCodModalOpen(true)} className="text-primary hover:underline">রিটার্ন পলিসি</a> &nbsp;|&nbsp;
+          <a href="#" onClick={(e) => { e.preventDefault(); setCodModalOpen(true); }} className="text-primary hover:underline">রিটার্ন পলিসি</a> &nbsp;|&nbsp;
           <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-primary hover:underline">যোগাযোগ: +{WHATSAPP_NUMBER}</a>
         </p>
       </footer>
@@ -946,9 +947,12 @@ export default function Home() {
                   <div key={item.id} className="flex justify-between items-center border-b border-border pb-3">
                     <div className="flex-1 min-w-0 mr-2">
                       <p className="font-bold text-sm truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.qty} × {formatPrice(item.price)}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => updateQuantity(item.id, item.qty - 1)} className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold hover:bg-muted/80">−</button>
+                        <span className="text-xs font-bold w-6 text-center">{item.qty}</span>
+                        <button onClick={() => updateQuantity(item.id, item.qty + 1)} className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold hover:bg-muted/80">+</button>
+                        <span className="text-xs text-muted-foreground ml-1">× {formatPrice(item.price)}</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm">{formatPrice(item.price * item.qty)}</span>
@@ -1103,9 +1107,8 @@ export default function Home() {
       <Dialog open={codModalOpen} onOpenChange={setCodModalOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              💵 ক্যাশ অন ডেলিভারি (COD)
-            </DialogTitle>
+            <DialogTitle>💵 ক্যাশ অন ডেলিভারি (COD)</DialogTitle>
+            <DialogDescription>পেমেন্ট পদ্ধতি সম্পর্কে তথ্য</DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             পণ্য হাতে পাওয়ার পর টাকা প্রদান করুন। ১০০% নিরাপদ ও বিশ্বস্ত।
@@ -1125,6 +1128,7 @@ export default function Home() {
           <div className="text-5xl mb-2">✅</div>
           <DialogHeader>
             <DialogTitle>অর্ডার সফলভাবে গৃহীত হয়েছে!</DialogTitle>
+            <DialogDescription>আপনার অর্ডার নিশ্চিত হয়েছে</DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             আপনার অর্ডার আইডি: <strong className="text-foreground">{orderId}</strong>

@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-brand: #2c7a47;
+  --color-brand-dark: #1f5a35;
+  --color-brand-amber: #ff8c1a;
+  --color-brand-warm: #fefaf0;
+  --color-wa: #25D366;
+  --color-call-blue: #0b65c2;
+  --color-danger: #e74c3c;
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: #fefaf0;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2c7a47;
+  --primary-foreground: #ffffff;
+  --secondary: #ff8c1a;
+  --secondary-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e8f5e9;
+  --accent-foreground: #1f5a35;
+  --destructive: #e74c3c;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2c7a47;
+  --chart-1: #2c7a47;
+  --chart-2: #ff8c1a;
+  --chart-3: #0b65c2;
+  --chart-4: #e74c3c;
+  --chart-5: #25D366;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2c7a47;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f5e9;
+  --sidebar-accent-foreground: #1f5a35;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2c7a47;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pulse animation for stock badges */
+@keyframes stock-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-stock-pulse {
+  animation: stock-pulse 2s ease-in-out infinite;
+}
+
+/* Hero gradient text */
+.gradient-text {
+  background: linear-gradient(130deg, #1f5a35, #ff8c1a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero background */
+.hero-gradient {
+  background: linear-gradient(115deg, #fdf3e0, #e1efdf);
+}
+
+/* Hero decorative pattern */
+.hero-pattern {
+  background-image: radial-gradient(circle at 20% 50%, rgba(44, 122, 71, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 140, 26, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 60% 80%, rgba(44, 122, 71, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(255, 140, 26, 0.04) 0%, transparent 40%);
+}
+
+/* Offer banner gradient */
+.offer-gradient {
+  background: linear-gradient(115deg, #ff4d4d, #da2c2c);
+}
+
+/* Final CTA gradient */
+.cta-gradient {
+  background: linear-gradient(135deg, #1f2a3c, #2c3e50);
+}
+
+/* Better focus styles */
+:focus-visible {
+  outline: 2px solid #2c7a47;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Prevent text selection on interactive elements */
+button, a[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}

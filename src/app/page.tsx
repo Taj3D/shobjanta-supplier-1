@@ -798,7 +798,7 @@ export default function Home() {
               <p className="text-sm opacity-80 mb-5">💳 ইলেকট্রনিক্স কিস্তিতে কিনুন — দেশের যেকোনো প্রান্তে ডেলিভারি!</p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
-                  onClick={() => openWhatsAppInquiry("বেস্ট অফার")}
+                  onClick={() => window.open("https://shobjanta-supplier.vercel.app/", "_blank", "noopener,noreferrer")}
                   className="bg-[#0b65c2] hover:bg-[#094d94] text-white rounded-full font-bold h-auto py-3 px-6"
                 >
                   🔥 বেস্ট অফার লিংক

@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
   ShoppingCart,
   Phone,
   MessageCircle,
-  ChevronDown,
   Minus,
   Plus,
   X,
@@ -20,7 +19,8 @@ import {
   Zap,
   Clock,
   MapPin,
-  AlertTriangle,
+  CreditCard,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +37,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -53,7 +52,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart-store";
 import {
   PRODUCTS,
@@ -69,6 +67,13 @@ import {
   isValidPhone,
 } from "@/lib/constants";
 
+/* ─── Facebook Pixel Event Tracker ─── */
+function fbqTrack(eventName: string, params?: Record<string, unknown>) {
+  if (typeof window !== "undefined" && typeof (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq === "function") {
+    (window as unknown as { fbq: (...args: unknown[]) => void }).fbq("track", eventName, params || {});
+  }
+}
+
 /* ─── Animation Variants ─── */
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -79,7 +84,7 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -175,11 +180,9 @@ export default function Home() {
 
   // Order tracking
   const [orderId, setOrderId] = useState("");
-  const [pendingOrderData, setPendingOrderData] = useState<{
-    type: "cart" | "direct";
-    productName?: string;
-    price?: number;
-  } | null>(null);
+
+  // Category filter
+  const [activeCategory, setActiveCategory] = useState<string>("all");
 
   // Delivery - lazy init from localStorage
   const [selectedDistrict, setSelectedDistrict] = useState(() => {
@@ -190,7 +193,7 @@ export default function Home() {
   const [deliveryFee, setDeliveryFee] = useState(() => {
     if (typeof window === "undefined") return 0;
     const saved = localStorage.getItem("selected_district");
-    return saved === "যশোর সদর" ? 0 : 70;
+    return saved === "যশোর সদর" ? 0 : saved ? 70 : 0;
   });
 
   // Sticky bar
@@ -207,15 +210,7 @@ export default function Home() {
   // Phone resolve ref
   const resolvePhoneRef = useRef<((phone: string | null) => void) | null>(null);
 
-  /* ─── Delivery Fee ─── */
-  const handleDistrictChange = (value: string) => {
-    setSelectedDistrict(value);
-    const fee = value === "যশোর সদর" ? 0 : 70;
-    setDeliveryFee(fee);
-    localStorage.setItem("selected_district", value);
-  };
-
-  /* ─── Load saved customer info ─── */
+  // Customer info lazy init
   const [customerPhone, setCustomerPhone] = useState(() => {
     if (typeof window === "undefined") return "";
     return localStorage.getItem("customer_phone") || "";
@@ -224,6 +219,14 @@ export default function Home() {
     if (typeof window === "undefined") return "";
     return localStorage.getItem("customer_name") || "";
   });
+
+  /* ─── Delivery Fee ─── */
+  const handleDistrictChange = (value: string) => {
+    setSelectedDistrict(value);
+    const fee = value === "যশোর সদর" ? 0 : 70;
+    setDeliveryFee(fee);
+    localStorage.setItem("selected_district", value);
+  };
 
   /* ─── Scroll handling for sticky bar ─── */
   useEffect(() => {
@@ -244,26 +247,20 @@ export default function Home() {
   useEffect(() => {
     const isMobile = () => window.innerWidth < 768;
 
-    // Desktop: mouseout
     const handleMouseOut = (e: MouseEvent) => {
-      if (
-        !isMobile() &&
-        e.clientY < 10 &&
-        !e.relatedTarget &&
-        !(e.target as HTMLElement)?.closest &&
-        !exitIntentOpen
-      ) {
+      if (!isMobile() && e.clientY < 10 && !e.relatedTarget && !exitIntentOpen) {
         setExitIntentOpen(true);
+        fbqTrack("ViewContent", { content_name: "exit_intent_popup" });
       }
     };
 
-    // Mobile: scroll depth 60%
     const handleMobileScroll = () => {
-      if (isMobile() || exitMobileShown.current) return;
+      if (!isMobile() || exitMobileShown.current) return;
       const scrolled = (window.innerHeight + window.scrollY) / document.body.scrollHeight;
       if (scrolled > 0.6 && !exitIntentOpen) {
         setExitIntentOpen(true);
         exitMobileShown.current = true;
+        fbqTrack("ViewContent", { content_name: "scroll_depth_popup" });
       }
     };
 
@@ -350,6 +347,8 @@ export default function Home() {
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
     openWhatsApp(msg);
+    fbqTrack("InitiateCheckout", { currency: "BDT", value: total });
+    fbqTrack("Purchase", { currency: "BDT", value: grandTotal });
     setOrderId(id);
     setThankYouOpen(true);
     clearCart();
@@ -370,6 +369,7 @@ export default function Home() {
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
     openWhatsApp(msg);
+    fbqTrack("Lead", { content_name: productName });
     setOrderId(id);
     setThankYouOpen(true);
   };
@@ -379,6 +379,7 @@ export default function Home() {
       ? `আসসালামু আলাইকুম,\nআমি "${product}" অর্ডার করতে চাই।\n\nনাম:\nঠিকানা:\nজেলা:\nপরিমাণ:\n\nদয়া করে কনফার্ম করুন।`
       : "আমি সবজান্তা সাপ্লাইয়ার থেকে সাধারণ ইনকোয়ারি করছি।";
     openWhatsApp(msg);
+    fbqTrack("Lead", { content_category: "inquiry" });
   };
 
   /* ─── Add to Cart Flow ─── */
@@ -386,19 +387,27 @@ export default function Home() {
     setSelectedProduct(product);
     setQty(1);
     setQtyModalOpen(true);
+    fbqTrack("ViewContent", { content_name: product.name, content_ids: [product.id], value: product.price, currency: "BDT" });
   };
 
   const confirmAddToCart = () => {
     if (selectedProduct) {
       addItem(selectedProduct.id, selectedProduct.name, selectedProduct.price, qty);
+      fbqTrack("AddToCart", { content_name: selectedProduct.name, content_ids: [selectedProduct.id], value: selectedProduct.price * qty, currency: "BDT" });
     }
     setQtyModalOpen(false);
     setQty(1);
     setCartOpen(true);
   };
 
+  /* ─── Category Filter ─── */
+  const filteredProducts = activeCategory === "all"
+    ? PRODUCTS
+    : PRODUCTS.filter((p) => p.category === activeCategory);
+
   const itemCount = getItemCount();
   const cartTotal = getTotal();
+  const grandTotal = cartTotal + deliveryFee;
 
   return (
     <div className="min-h-screen flex flex-col pb-20">
@@ -409,41 +418,43 @@ export default function Home() {
         variants={fadeInUp}
         className="hero-gradient relative overflow-hidden rounded-b-3xl px-4 py-10 md:py-16 text-center mb-4"
       >
-        {/* Decorative background pattern */}
         <div className="absolute inset-0 hero-pattern opacity-30 pointer-events-none" aria-hidden="true" />
         <div className="relative z-10">
-        <motion.img
-          src="/images/logo.png"
-          alt="সবজান্তা সাপ্লাইয়ার লোগো"
-          className="max-w-[180px] mx-auto mb-6"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          width={180}
-          height={60}
-        />
-        <h1 className="gradient-text text-2xl md:text-4xl lg:text-5xl font-extrabold mb-4 max-w-4xl mx-auto leading-tight">
-          পাকিস্তানি বাসমতী, ইলেকট্রনিক্স, ফ্যাশন ও ডিজিটাল সার্ভিস — এক ছাদের নিচে
-        </h1>
-        <p className="text-foreground/70 text-sm md:text-base mb-6">
-          🚚 দ্রুত ডেলিভারি &nbsp;|&nbsp; 💵 ক্যাশ অন ডেলিভারি &nbsp;|&nbsp; 🟢 ২৪/৭ হোয়াটসঅ্যাপ সাপোর্ট
-        </p>
-        <div className="flex flex-wrap gap-3 justify-center">
-          <Button
-            onClick={() => openWhatsAppInquiry()}
-            className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-6 py-3 text-base font-bold h-auto"
-          >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            হোয়াটসঅ্যাপে অর্ডার করুন
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
-            className="border-primary text-primary hover:bg-primary hover:text-white rounded-full px-6 py-3 text-base font-bold h-auto"
-          >
-            সব পণ্য দেখুন
-          </Button>
-        </div>
+          <motion.img
+            src="/images/logo.png"
+            alt="সবজান্তা সাপ্লাইয়ার লোগো"
+            className="max-w-[180px] mx-auto mb-6"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            width={180}
+            height={60}
+          />
+          <h1 className="gradient-text text-2xl md:text-4xl lg:text-5xl font-extrabold mb-4 max-w-4xl mx-auto leading-tight">
+            মুদি, মাছ-মাংস, ইলেকট্রনিক্স (কিস্তি) ও ডিজিটাল সার্ভিস — এক ছাদের নিচে
+          </h1>
+          <p className="text-foreground/70 text-sm md:text-base mb-3">
+            🚚 সারা দেশ ডেলিভারি &nbsp;|&nbsp; 💵 ক্যাশ অন ডেলিভারি &nbsp;|&nbsp; 🟢 ২৪/৭ হোয়াটসঅ্যাপ সাপোর্ট
+          </p>
+          <p className="text-primary font-bold text-sm md:text-base mb-6">
+            💳 টিভি, ফ্রিজ, AC, ফোন — কিস্তিতে কিনুন, দেশের যেকোনো প্রান্তে!
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Button
+              onClick={() => openWhatsAppInquiry()}
+              className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-6 py-3 text-base font-bold h-auto"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              হোয়াটসঅ্যাপে অর্ডার করুন
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
+              className="border-primary text-primary hover:bg-primary hover:text-white rounded-full px-6 py-3 text-base font-bold h-auto"
+            >
+              সব পণ্য দেখুন
+            </Button>
+          </div>
         </div>
       </motion.section>
 
@@ -454,7 +465,7 @@ export default function Home() {
             {[
               { icon: <Truck className="w-4 h-4" />, text: "সারা দেশ ডেলিভারি" },
               { icon: <span className="text-base">💵</span>, text: "ক্যাশ অন ডেলিভারি" },
-              { icon: <Phone className="w-4 h-4" />, text: "২৪/৭ সাপোর্ট" },
+              { icon: <CreditCard className="w-4 h-4" />, text: "কিস্তি সুবিধা" },
               { icon: <ShieldCheck className="w-4 h-4" />, text: "১০০% ট্রাস্টেড" },
             ].map((item, i) => (
               <span key={i} className="flex items-center gap-1.5 font-semibold text-xs md:text-sm text-foreground">
@@ -512,17 +523,23 @@ export default function Home() {
         <AnimatedSection delay={0.2}>
           <section className="mb-8">
             <h2 className="text-center text-xl md:text-2xl font-bold mb-4">📦 ক্যাটাগরি</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+              <button
+                onClick={() => setActiveCategory("all")}
+                className={`rounded-2xl p-3 md:p-4 text-center shadow-sm transition-all duration-200 border-2 ${activeCategory === "all" ? "bg-primary text-white border-primary" : "bg-white border-transparent hover:shadow-md hover:-translate-y-1"}`}
+              >
+                <span className="text-2xl md:text-3xl block mb-1">🏪</span>
+                <h3 className="text-[10px] md:text-sm font-bold">সব পণ্য</h3>
+              </button>
               {CATEGORIES.map((cat, i) => (
-                <motion.a
+                <button
                   key={i}
-                  href="#products"
-                  variants={staggerItem}
-                  className="bg-white rounded-2xl p-4 text-center shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 no-underline text-foreground"
+                  onClick={() => setActiveCategory(cat.filterKey || "all")}
+                  className={`rounded-2xl p-3 md:p-4 text-center shadow-sm transition-all duration-200 border-2 ${activeCategory === cat.filterKey ? "bg-primary text-white border-primary" : "bg-white border-transparent hover:shadow-md hover:-translate-y-1"}`}
                 >
-                  <span className="text-3xl block mb-2">{cat.icon}</span>
-                  <h3 className="text-sm font-bold">{cat.name}</h3>
-                </motion.a>
+                  <span className="text-2xl md:text-3xl block mb-1">{cat.icon}</span>
+                  <h3 className="text-[10px] md:text-sm font-bold">{cat.name}</h3>
+                </button>
               ))}
             </div>
           </section>
@@ -531,15 +548,21 @@ export default function Home() {
         {/* ─── PRODUCTS ─── */}
         <AnimatedSection delay={0.1}>
           <section id="products" className="mb-8 scroll-mt-4">
-            <h2 className="text-center text-xl md:text-2xl font-bold mb-6">⚡ স্পেশাল অফার</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl md:text-2xl font-bold">⚡ স্পেশাল অফার</h2>
+              <span className="text-xs text-muted-foreground bg-white px-3 py-1 rounded-full shadow-sm">
+                <Filter className="w-3 h-3 inline mr-1" />
+                {filteredProducts.length}টি পণ্য
+              </span>
+            </div>
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+              key={activeCategory}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5"
               variants={staggerContainer}
               initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              animate="visible"
             >
-              {PRODUCTS.map((product) => (
+              {filteredProducts.map((product) => (
                 <motion.div
                   key={product.id}
                   variants={staggerItem}
@@ -558,7 +581,7 @@ export default function Home() {
                   </div>
 
                   {/* Info */}
-                  <div className="p-4 flex flex-col flex-1">
+                  <div className="p-3 md:p-4 flex flex-col flex-1">
                     {/* Badges */}
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {product.offerBadge && (
@@ -576,7 +599,12 @@ export default function Home() {
                           className="bg-[#0b65c2] text-white rounded-full text-[10px] font-bold px-2.5 py-0.5 cursor-pointer hover:bg-[#094d94]"
                           onClick={() => setCodModalOpen(true)}
                         >
-                          💵 ক্যাশ অন ডেলিভারি
+                          💵 COD
+                        </Badge>
+                      )}
+                      {product.showEmi && (
+                        <Badge className="bg-primary text-white rounded-full text-[10px] font-bold px-2.5 py-0.5">
+                          💳 কিস্তি {product.emiInfo}
                         </Badge>
                       )}
                     </div>
@@ -609,7 +637,7 @@ export default function Home() {
                         className="bg-[#ff8c1a] hover:bg-[#e67e22] text-white rounded-full font-bold text-xs h-9 px-2"
                       >
                         <ShoppingCart className="w-3.5 h-3.5 mr-1" />
-                        অর্ডার কনফার্ম
+                        অর্ডার
                       </Button>
                       <Button
                         onClick={() => openWhatsAppInquiry(product.name)}
@@ -633,7 +661,12 @@ export default function Home() {
 
             {/* Combo Offer */}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center mt-6 font-bold text-sm">
-              🎁 Buy 2 Rice (3kg) → Free Delivery + 5% Extra Discount
+              🎁 ২টি বাসমতী চাল (৩ কেজি) কিনলে → ফ্রি ডেলিভারি + ৫% অতিরিক্ত ছাড়
+            </div>
+
+            {/* EMI Info Banner */}
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center mt-4 font-bold text-sm text-primary">
+              💳 সকল ইলেকট্রনিক্স পণ্য কিস্তিতে পাওয়া যায় — টিভি, ফ্রিজ, AC, এয়ার কুলার, ফোন। WhatsApp এ জানুন।
             </div>
           </section>
         </AnimatedSection>
@@ -644,9 +677,9 @@ export default function Home() {
             <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                  { icon: <ShieldCheck className="w-8 h-8 text-primary" />, title: "১০০% খাঁটি", desc: "পাকিস্তানি অরিজিনাল বাসমতী" },
-                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "যশোরে ফ্রি ডেলিভারি", desc: "অর্ডারের ২৪-৪৮ ঘণ্টার মধ্যে" },
-                  { icon: <Users className="w-8 h-8 text-primary" />, title: "পাইকারি সুবিধা", desc: "রিসেলারদের জন্য স্পেশাল রেট" },
+                  { icon: <ShieldCheck className="w-8 h-8 text-primary" />, title: "১০০% খাঁটি পণ্য", desc: "সতেজ মাছ-মাংস-সবজি ও অরিজিনাল বাসমতী" },
+                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশ ডেলিভারি", desc: "যশোরে ফ্রি, অন্যান্য জেলায় ৳৭০" },
+                  { icon: <CreditCard className="w-8 h-8 text-primary" />, title: "কিস্তি সুবিধা", desc: "টিভি, ফ্রিজ, AC, ফোন কিস্তিতে কিনুন" },
                   { icon: <Lightbulb className="w-8 h-8 text-primary" />, title: "ডিজিটাল সাপোর্ট", desc: "ওয়েব, এডস, গ্রাফিক্স, সফটওয়্যার" },
                 ].map((item, i) => (
                   <div key={i} className="text-center">
@@ -665,8 +698,11 @@ export default function Home() {
           <section className="mb-8">
             <div className="offer-gradient rounded-3xl p-6 md:p-8 text-center text-white">
               <h3 className="text-xl md:text-2xl font-bold mb-2">🔥 লিমিটেড টাইম অফার 🔥</h3>
-              <p className="text-sm md:text-base opacity-90 mb-3">
+              <p className="text-sm md:text-base opacity-90 mb-1">
                 যেকোনো ইলেকট্রনিক্স পণ্যে ৫% ছাড় + ফ্রি ডেলিভারি
+              </p>
+              <p className="text-sm opacity-80 mb-3">
+                💳 কিস্তিতে কিনতে চাইলে WhatsApp এ যোগাযোগ করুন
               </p>
               <div className="inline-block bg-black/25 px-4 py-2 rounded-full font-bold text-lg tracking-wider mb-4">
                 <Clock className="w-4 h-4 inline mr-2" />
@@ -737,7 +773,8 @@ export default function Home() {
           <section className="mb-8">
             <div className="cta-gradient rounded-3xl p-6 md:p-8 text-center text-white">
               <h2 className="text-xl md:text-2xl font-bold mb-3">🚀 আজই সেরা অফারটি মিস করবেন না</h2>
-              <p className="text-sm opacity-80 mb-5">স্টক সীমিত, অর্ডার করতে দেরি করবেন না।</p>
+              <p className="text-sm opacity-80 mb-1">স্টক সীমিত, অর্ডার করতে দেরি করবেন না।</p>
+              <p className="text-sm opacity-80 mb-5">💳 ইলেকট্রনিক্স কিস্তিতে কিনুন — দেশের যেকোনো প্রান্তে ডেলিভারি!</p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
                   onClick={() => openWhatsAppInquiry("বেস্ট অফার")}
@@ -759,14 +796,14 @@ export default function Home() {
       </div>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-border mt-auto py-6 px-4 text-center text-xs text-muted-foreground bg-white/80" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
+      <footer className="border-t border-border mt-auto py-6 px-4 text-center text-xs text-muted-foreground bg-white/80" style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}>
         <p>
           © ২০২৬ <strong>সবজান্তা সাপ্লাইয়ার</strong> – বিশ্বস্ত মাল্টি-ক্যাটাগরি স্টোর
         </p>
         <p className="mt-1">
-          <a href="#" className="text-primary hover:underline">প্রিমিয়াম পণ্য</a> &nbsp;|&nbsp;
-          <a href="#" className="text-primary hover:underline">রিটার্ন পলিসি</a> &nbsp;|&nbsp;
-          <a href="#" className="text-primary hover:underline">যোগাযোগ</a>
+          <a href="#products" className="text-primary hover:underline">প্রিমিয়াম পণ্য</a> &nbsp;|&nbsp;
+          <a href="javascript:void(0)" onClick={() => setCodModalOpen(true)} className="text-primary hover:underline">রিটার্ন পলিসি</a> &nbsp;|&nbsp;
+          <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-primary hover:underline">যোগাযোগ: +{WHATSAPP_NUMBER}</a>
         </p>
       </footer>
 
@@ -830,7 +867,7 @@ export default function Home() {
           onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
           className="bg-primary hover:bg-primary/90 text-white rounded-full font-bold text-xs md:text-sm h-8 px-4"
         >
-          এখনই অর্ডার করুন
+          এখনই অর্ডার
         </Button>
       </motion.div>
 
@@ -846,7 +883,7 @@ export default function Home() {
             </SheetTitle>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar max-h-[60vh]">
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar max-h-[50vh]">
             {items.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">কার্ট খালি</p>
             ) : (
@@ -878,13 +915,18 @@ export default function Home() {
 
           {items.length > 0 && (
             <div className="p-4 border-t space-y-3">
-              <div className="flex justify-between font-extrabold text-lg">
-                <span>মোট:</span>
-                <span className="text-primary">{formatPrice(cartTotal)}</span>
+              <div className="flex justify-between font-bold text-sm">
+                <span>পণ্য মূল্য:</span>
+                <span>{formatPrice(cartTotal)}</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                ডেলিভারি চার্জ: {deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}
-              </p>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ডেলিভারি চার্জ:</span>
+                <span>{deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between font-extrabold text-lg border-t border-border pt-2">
+                <span>সর্বমোট:</span>
+                <span className="text-primary">{formatPrice(grandTotal)}</span>
+              </div>
               <Button
                 onClick={sendCartOrder}
                 className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full font-bold h-12"
@@ -1015,7 +1057,7 @@ export default function Home() {
             পণ্য হাতে পাওয়ার পর টাকা প্রদান করুন। ১০০% নিরাপদ ও বিশ্বস্ত।
           </p>
           <p className="text-xs text-muted-foreground">
-            যশোরে ফ্রি ডেলিভারি, অন্যান্য জেলায় মাত্র ৭০ টাকা।
+            যশোরে ফ্রি ডেলিভারি, অন্যান্য জেলায় মাত্র ৳৭০।
           </p>
           <Button onClick={() => setCodModalOpen(false)} className="bg-primary hover:bg-primary/90 text-white rounded-full font-bold">
             বুঝলাম
@@ -1050,7 +1092,7 @@ export default function Home() {
             <DialogTitle>যাওয়ার আগে বিশেষ ছাড়!</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            এখনই অর্ডার করলে <strong className="text-foreground">ফ্রি ডেলিভারি</strong> ও অতিরিক্ত ৫% ছাড়।
+            এখনই অর্ডার করলে <strong className="text-foreground">ফ্রি ডেলিভারি</strong> ও অতিরিক্ত ৫% ছাড়। ইলেকট্রনিক্সে <strong className="text-foreground">কিস্তি সুবিধা</strong>!
           </p>
           <div className="space-y-2">
             <Button

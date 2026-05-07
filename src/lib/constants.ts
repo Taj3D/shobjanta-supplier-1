@@ -1,5 +1,7 @@
 export const WHATSAPP_NUMBER = "8801711731354";
 export const BASE_WA_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+export const FB_PIXEL_ID = "918051034554872";
+export const SITE_URL = "https://shobjanta-supplier.vercel.app";
 
 export interface Product {
   id: string;
@@ -11,9 +13,13 @@ export interface Product {
   offerBadge?: string;
   stockBadge?: string;
   showCod?: boolean;
+  showEmi?: boolean;
+  emiInfo?: string;
+  category?: string;
 }
 
 export const PRODUCTS: Product[] = [
+  // ─── মুদি পণ্য (Groceries) ───
   {
     id: "prod_rice_001",
     name: "প্রিমিয়াম পাকিস্তানি বাসমতী চাল (৩ কেজি জার)",
@@ -23,7 +29,48 @@ export const PRODUCTS: Product[] = [
     offerBadge: "BEST OFFER",
     stockBadge: "মাত্র ১৫টি বাকি!",
     showCod: true,
+    category: "grocery",
   },
+  {
+    id: "prod_dal_oil_001",
+    name: "খাঁটি ডাল ও সরিষার তেল প্যাকেজ",
+    price: 850,
+    oldPrice: 1100,
+    image: "/images/dal-oil.png",
+    offerBadge: "SAVE ৳২৫০",
+    showCod: true,
+    category: "grocery",
+  },
+  {
+    id: "prod_fish_001",
+    name: "সতেজ ইলিশ মাছ (১ কেজি)",
+    price: 1400,
+    oldPrice: 1800,
+    image: "/images/fish.png",
+    stockBadge: "সীমিত স্টক!",
+    showCod: true,
+    category: "grocery",
+  },
+  {
+    id: "prod_meat_001",
+    name: "সতেজ গরুর মাংস (১ কেজি)",
+    price: 750,
+    oldPrice: 900,
+    image: "/images/meat.png",
+    showCod: true,
+    category: "grocery",
+  },
+  {
+    id: "prod_veg_001",
+    name: "তাজা সবজি বাস্কেট (মিশ্র ৩ কেজি)",
+    price: 350,
+    oldPrice: 450,
+    image: "/images/vegetables.png",
+    offerBadge: "FRESH",
+    showCod: true,
+    category: "grocery",
+  },
+  // ─── ইলেকট্রনিক্স (কিস্তিতে পাওয়া যায়) ───
   {
     id: "prod_tv_001",
     name: '৪৩" স্মার্ট টিভি',
@@ -32,7 +79,57 @@ export const PRODUCTS: Product[] = [
     image: "/images/smart-tv.png",
     stockBadge: "মাত্র ৫টি বাকি!",
     showCod: true,
+    showEmi: true,
+    emiInfo: "৳৩,১৬৭/মাস",
+    category: "electronics",
   },
+  {
+    id: "prod_fridge_001",
+    name: "ডাবল ডোর ফ্রিজ (২৬০ লিটার)",
+    price: 42999,
+    oldPrice: 52000,
+    image: "/images/fridge.png",
+    showCod: true,
+    showEmi: true,
+    emiInfo: "৳৩,৫৮৩/মাস",
+    category: "electronics",
+  },
+  {
+    id: "prod_ac_001",
+    name: "১.৫ টন স্প্লিট AC",
+    price: 48999,
+    oldPrice: 58000,
+    image: "/images/ac.png",
+    stockBadge: "গরমে সেরা ডিল!",
+    showCod: true,
+    showEmi: true,
+    emiInfo: "৳৪,০৮৩/মাস",
+    category: "electronics",
+  },
+  {
+    id: "prod_cooler_001",
+    name: "এয়ার কুলার (টাওয়ার ফ্যান)",
+    price: 8999,
+    oldPrice: 12500,
+    image: "/images/air-cooler.png",
+    offerBadge: "HOT DEAL",
+    showCod: true,
+    showEmi: true,
+    emiInfo: "৳৭৫০/মাস",
+    category: "electronics",
+  },
+  {
+    id: "prod_phone_001",
+    name: "স্মার্টফোন (৪GB RAM, 128GB)",
+    price: 12999,
+    oldPrice: 16999,
+    image: "/images/phone.png",
+    showCod: true,
+    showEmi: true,
+    emiInfo: "৳১,০৮৩/মাস",
+    category: "electronics",
+  },
+  // ─── ফ্যাশন ───
   {
     id: "prod_saree_001",
     name: "ঈদ কালেকশন শাড়ি",
@@ -40,7 +137,9 @@ export const PRODUCTS: Product[] = [
     oldPrice: 3200,
     image: "/images/saree.png",
     showCod: true,
+    category: "fashion",
   },
+  // ─── ডিজিটাল সার্ভিস ───
   {
     id: "prod_service_001",
     name: "ল্যান্ডিং পেজ + এডস ম্যানেজ + সফটওয়্যার তৈরি",
@@ -48,6 +147,7 @@ export const PRODUCTS: Product[] = [
     priceLabel: "প্যাকেজ ৳৪,৯৯৯ থেকে",
     image: "/images/digital-service.png",
     offerBadge: "PREMIUM",
+    category: "digital",
   },
 ];
 
@@ -76,13 +176,28 @@ export const REVIEWS: Review[] = [
   },
   {
     stars: 5,
-    text: "ল্যান্ডিং পেজ + এডস ম্যানেজ সফটওয়্যার তৈরি বেস্ট ছিল। NextGen টিমও চমৎকার।",
-    author: "রাফি হোসেন, ঢাকা",
+    text: "কিস্তিতে স্মার্ট টিভি নিলাম, মাসিক কিস্তি সুবিধা চমৎকার! কোনো ঝামেলা নেই।",
+    author: "রাকিব হাসান, ঢাকা",
   },
   {
     stars: 5,
-    text: "শাড়ির কালেকশন অসাধারণ, ক্যাশ অন ডেলিভারি ঝামেলামুক্ত।",
-    author: "তানিয়া সুলতানা, চট্টগ্রাম",
+    text: "ইলিশ মাছ ও সবজি অর্ডার করেছিলাম, সতেজ ও টাটকা পেয়েছি। ক্যাশ অন ডেলিভারিতে সুবিধা।",
+    author: "নাসরিন জাহান, চট্টগ্রাম",
+  },
+  {
+    stars: 5,
+    text: "এয়ার কুলার কিস্তিতে নিয়েছি, গরমে অনেক আরাম! ডেলিভারিও দ্রুত।",
+    author: "মো. আলী হোসেন, রাজশাহী",
+  },
+  {
+    stars: 5,
+    text: "ফ্রিজ কিস্তিতে কিনলাম, শুধু আগে কিছু টাকা দিয়েছি। বাকি মাসে মাসে দিচ্ছি।",
+    author: "ফারহানা ইয়াসমিন, খুলনা",
+  },
+  {
+    stars: 5,
+    text: "ডাল-তেল প্যাকেজ অর্ডার করেছি, দাম বাজারের চেয়ে কম ও মান ভালো।",
+    author: "সাইফুল ইসলাম, যশোর",
   },
 ];
 
@@ -97,12 +212,20 @@ export const FAQ_ITEMS: FAQItem[] = [
     answer: 'পণ্যে "অর্ডার কনফার্ম" ক্লিক করে কার্টে এড করুন এবং চেকআউট করুন। অথবা "সরাসরি অর্ডার" বাটনে ক্লিক করে WhatsApp এ প্রি-ফিল্ড অর্ডার করুন।',
   },
   {
+    question: "কিস্তিতে (EMI) কিভাবে কিনব?",
+    answer: "ইলেকট্রনিক্স পণ্যে (টিভি, ফ্রিজ, AC, ফোন) কিস্তি সুবিধা আছে। WhatsApp এ আপনার পছন্দের পণ্যের নাম ও 'কিস্তি' লিখুন। ডাউন পেমেন্টের পর মাসিক কিস্তিতে পরিশোধ করতে পারবেন।",
+  },
+  {
     question: "ডেলিভারি কতদিন লাগে?",
-    answer: "যশোর: ২৪ ঘণ্টা, ঢাকা/চট্টগ্রাম: ২-৩ দিন, অন্যান্য জেলা: ৩-৫ দিন। কুরিয়ার পার্টনার: পাথাও, সন্দরবন, রেডএক্স।",
+    answer: "যশোর: ২৪ ঘণ্টা, ঢাকা/চট্টগ্রাম: ২-৩ দিন, অন্যান্য জেলা: ৩-৫ দিন। মাছ/মাংস/সবজি: যশোরে একই দিনে। কুরিয়ার পার্টনার: পাথাও, সন্দরবন, রেডএক্স।",
+  },
+  {
+    question: "মাছ, মাংস ও সবজি সতেজ পাবো?",
+    answer: "হ্যাঁ! মাছ, মাংস ও সবজি সরাসরি স্থানীয় বাজার থেকে সংগ্রহ করে দ্রুত ডেলিভারি দেওয়া হয়। যশোরে একই দিনে, অন্যান্য জেলায় ফ্রোজেন/প্যাকেজড ডেলিভারি।",
   },
   {
     question: "রিটার্ন পলিসি কী?",
-    answer: "পণ্য নষ্ট বা ভুল আসলে ৩ দিনের মধ্যে ফেরত / বিনিময় সুবিধা আছে।",
+    answer: "পণ্য নষ্ট বা ভুল আসলে ৩ দিনের মধ্যে ফেরত / বিনিময় সুবিধা আছে। পচনশীল পণ্যে (মাছ/মাংস/সবজি) ডেলিভারির সময় চেক করুন।",
   },
   {
     question: "পাইকারি কিনতে চাই?",
@@ -113,13 +236,16 @@ export const FAQ_ITEMS: FAQItem[] = [
 export interface Category {
   icon: string;
   name: string;
+  filterKey?: string;
 }
 
 export const CATEGORIES: Category[] = [
-  { icon: "🍚", name: "চাল, ডাল, তেল" },
-  { icon: "📺", name: "ইলেকট্রনিক্স" },
-  { icon: "👗", name: "ফ্যাশন" },
-  { icon: "💻", name: "ডিজিটাল সার্ভিস" },
+  { icon: "🍚", name: "চাল, ডাল, তেল", filterKey: "grocery" },
+  { icon: "🐟", name: "মাছ, মাংস, সবজি", filterKey: "grocery" },
+  { icon: "📺", name: "ইলেকট্রনিক্স (কিস্তি)", filterKey: "electronics" },
+  { icon: "📱", name: "ফোন (কিস্তি)", filterKey: "electronics" },
+  { icon: "👗", name: "ফ্যাশন", filterKey: "fashion" },
+  { icon: "💻", name: "ডিজিটাল সার্ভিস", filterKey: "digital" },
 ];
 
 export function formatPrice(price: number): string {

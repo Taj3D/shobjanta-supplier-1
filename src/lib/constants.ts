@@ -1,7 +1,7 @@
 export const WHATSAPP_NUMBER = "8801711731354";
 export const BASE_WA_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const FB_PIXEL_ID = "918051034554872";
-export const SITE_URL = "https://shobjanta-supplier.vercel.app";
+export const SITE_URL = "https://shobjanta-supplier-1.vercel.app";
 
 export interface Product {
   id: string;

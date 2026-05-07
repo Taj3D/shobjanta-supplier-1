@@ -243,48 +243,65 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* ─── Exit Intent Detection ─── */
+  /* ─── Exit Intent Detection (একবারই দেখাবে, বারবার না) ─── */
   useEffect(() => {
+    // আগে দেখালে আর দেখাবে না
+    const alreadyShown = sessionStorage.getItem("exit_intent_shown");
+    if (alreadyShown) return;
+
     const isMobile = () => window.innerWidth < 768;
+    let desktopShown = false;
 
     const handleMouseOut = (e: MouseEvent) => {
-      if (!isMobile() && e.clientY < 10 && !e.relatedTarget && !exitIntentOpen) {
-        setExitIntentOpen(true);
-        fbqTrack("ViewContent", { content_name: "exit_intent_popup" });
-      }
+      if (desktopShown || isMobile() || e.clientY > 10 || e.relatedTarget) return;
+      desktopShown = true;
+      setExitIntentOpen(true);
+      sessionStorage.setItem("exit_intent_shown", "1");
+      fbqTrack("ViewContent", { content_name: "exit_intent_popup" });
     };
 
     const handleMobileScroll = () => {
       if (!isMobile() || exitMobileShown.current) return;
       const scrolled = (window.innerHeight + window.scrollY) / document.body.scrollHeight;
-      if (scrolled > 0.6 && !exitIntentOpen) {
-        setExitIntentOpen(true);
+      if (scrolled > 0.7) {
         exitMobileShown.current = true;
+        setExitIntentOpen(true);
+        sessionStorage.setItem("exit_intent_shown", "1");
         fbqTrack("ViewContent", { content_name: "scroll_depth_popup" });
       }
     };
 
-    document.addEventListener("mouseout", handleMouseOut);
-    window.addEventListener("scroll", handleMobileScroll, { passive: true });
+    // পেজ লোডের ১৫ সেকেন্ড পর থেকে ট্র্যাক শুরু
+    const initDelay = setTimeout(() => {
+      document.addEventListener("mouseout", handleMouseOut);
+      window.addEventListener("scroll", handleMobileScroll, { passive: true });
+    }, 15000);
+
     return () => {
+      clearTimeout(initDelay);
       document.removeEventListener("mouseout", handleMouseOut);
       window.removeEventListener("scroll", handleMobileScroll);
     };
-  }, [exitIntentOpen]);
+  }, []);
 
-  /* ─── Abandoned Cart Timer ─── */
+  /* ─── Abandoned Cart Timer (একবারই দেখাবে, বারবার না) ─── */
   useEffect(() => {
     if (abandonTimerRef.current) {
       clearTimeout(abandonTimerRef.current);
       abandonTimerRef.current = null;
     }
 
+    // এই সেশনে আগে দেখালে আর দেখাবে না
+    const alreadyShown = sessionStorage.getItem("abandon_cart_shown");
+    if (alreadyShown) return;
+
     if (getItemCount() > 0) {
       abandonTimerRef.current = setTimeout(() => {
         if (getItemCount() > 0) {
           setAbandonModalOpen(true);
+          sessionStorage.setItem("abandon_cart_shown", "1");
         }
-      }, 25000);
+      }, 60000); // ১ মিনিট পর দেখাবে (২৫ সেকেন্ড আগে ছিল, খুব দ্রুত)
     }
 
     return () => {
@@ -1129,7 +1146,7 @@ export default function Home() {
             <DialogTitle>যাওয়ার আগে বিশেষ ছাড়!</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            এখনই অর্ডার করলে <strong className="text-foreground">ফ্রি ডেলিভারি</strong> ও অতিরিক্ত ৫% ছাড়। ইলেকট্রনিক্সে <strong className="text-foreground">কিস্তি সুবিধা</strong>!
+            এখনই অর্ডার করলে <strong className="text-foreground">যশোর শহরে ফ্রি ডেলিভারি</strong> ও অতিরিক্ত ৫% ছাড়। ইলেকট্রনিক্সে <strong className="text-foreground">কিস্তি সুবিধা</strong>!
           </p>
           <div className="space-y-2">
             <Button
@@ -1161,7 +1178,7 @@ export default function Home() {
             <DialogTitle>আপনার কার্টে পণ্য পড়ে আছে!</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            আপনার অর্ডার সম্পন্ন করতে এখনই চেকআউট করুন। দেরি করবেন না, স্টক সীমিত!
+            আপনার অর্ডার সম্পন্ন করতে এখনই চেকআউট করুন। 💵 ক্যাশ অন ডেলিভারি সুবিধা!
           </p>
           <div className="space-y-2">
             <Button

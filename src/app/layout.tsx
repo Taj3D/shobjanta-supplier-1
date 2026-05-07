@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Hind_Siliguri, Noto_Sans_Bengali } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,6 +14,23 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/* ─── Premium Bengali Fonts ─── */
+const hindSiliguri = Hind_Siliguri({
+  variable: "--font-bangla",
+  subsets: ["bengali"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  preload: true,
+});
+
+const notoSansBengali = Noto_Sans_Bengali({
+  variable: "--font-bangla-body",
+  subsets: ["bengali"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -188,7 +206,7 @@ export default function RootLayout({
         <SchemaMarkup />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${hindSiliguri.variable} ${notoSansBengali.variable} antialiased bg-background text-foreground`}
       >
         <FacebookPixel />
         {children}

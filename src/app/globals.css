@@ -91,6 +91,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-bangla-body), var(--font-bangla), var(--font-geist-sans), system-ui, sans-serif;
+  }
+  /* হেডিং/টাইটেলে Hind Siliguri — বোল্ড ও স্টাইলিশ */
+  h1, h2, h3, h4, h5, h6,
+  .font-bold, .font-extrabold, .font-semibold {
+    font-family: var(--font-bangla), var(--font-bangla-body), var(--font-geist-sans), system-ui, sans-serif;
   }
   html {
     scroll-behavior: smooth;

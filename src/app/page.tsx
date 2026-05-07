@@ -358,7 +358,8 @@ export default function Home() {
     });
     const total = getTotal();
     const grandTotal = total + deliveryFee;
-    msg += `\n💰 পণ্য মূল্য: ${formatPrice(total)}\n🧾 *সর্বমোট: ${formatPrice(grandTotal)}* (ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)})\n`;
+    const deliveryLabel = !selectedDistrict ? "নির্ধারিত হয়নি" : deliveryFee === 0 ? "ফ্রি (যশোর শহর)" : formatPrice(deliveryFee);
+    msg += `\n💰 পণ্য মূল্য: ${formatPrice(total)}\n🧾 *সর্বমোট: ${formatPrice(grandTotal)}* (ডেলিভারি চার্জ: ${deliveryLabel})\n`;
     msg += `\n📞 ফোন: ${phone}`;
     if (customerName.trim()) msg += `\n👤 নাম: ${customerName.trim()}`;
     if (customerAddress.trim()) msg += `\n📍 ঠিকানা: ${customerAddress.trim()}`;
@@ -385,7 +386,8 @@ export default function Home() {
     if (customerName.trim()) msg += `\n👤 নাম: ${customerName.trim()}`;
     if (customerAddress.trim()) msg += `\n📍 ঠিকানা: ${customerAddress.trim()}`;
     msg += `\n🗺️ জেলা: ${selectedDistrict || "নির্ধারিত হয়নি"}`;
-    msg += `\n🚚 ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}`;
+    const deliveryLabel2 = !selectedDistrict ? "নির্ধারিত হয়নি" : deliveryFee === 0 ? "ফ্রি (যশোর শহর)" : formatPrice(deliveryFee);
+    msg += `\n🚚 ডেলিভারি চার্জ: ${deliveryLabel2}`;
     msg += `\n💵 পেমেন্ট: ক্যাশ অন ডেলিভারি`;
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
@@ -986,9 +988,38 @@ export default function Home() {
                 <span>পণ্য মূল্য:</span>
                 <span>{formatPrice(cartTotal)}</span>
               </div>
+              {/* District selector inside cart */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-primary" />
+                  জেলা নির্বাচন করুন:
+                </label>
+                <select
+                  value={selectedDistrict}
+                  onChange={(e) => handleDistrictChange(e.target.value)}
+                  className="w-full rounded-full border-2 border-primary/30 bg-white px-3 py-2 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary appearance-none cursor-pointer"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c7a47' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6.5 6.5-6.5'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 12px center',
+                    backgroundSize: '12px',
+                  }}
+                >
+                  <option value="">-- জেলা নির্বাচন করুন --</option>
+                  {DISTRICTS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>ডেলিভারি চার্জ:</span>
-                <span>{deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}</span>
+                <span className={selectedDistrict === "" ? "text-amber-600 font-semibold" : ""}>
+                  {!selectedDistrict
+                    ? "জেলা নির্বাচন করুন"
+                    : deliveryFee === 0
+                      ? "ফ্রি (যশোর শহর)"
+                      : formatPrice(deliveryFee)}
+                </span>
               </div>
               <div className="flex justify-between font-extrabold text-lg border-t border-border pt-2">
                 <span>সর্বমোট:</span>

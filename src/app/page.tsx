@@ -467,7 +467,7 @@ export default function Home() {
             ))}
           </div>
           <p className="text-foreground/70 text-sm md:text-base mb-3">
-            🚚 সারা দেশ ডেলিভারি &nbsp;|&nbsp; 💵 ক্যাশ অন ডেলিভারি &nbsp;|&nbsp; 🟢 ২৪/৭ হোয়াটসঅ্যাপ সাপোর্ট
+            🚚 সারা দেশে ডেলিভারি &nbsp;|&nbsp; 💵 ক্যাশ অন ডেলিভারি &nbsp;|&nbsp; 🟢 ২৪/৭ হোয়াটসঅ্যাপ সাপোর্ট
           </p>
           <p className="text-primary font-bold text-sm md:text-base mb-6">
             💳 টিভি, ফ্রিজ, AC, ফোন — কিস্তিতে কিনুন, দেশের যেকোনো প্রান্তে!
@@ -496,7 +496,7 @@ export default function Home() {
         <AnimatedSection>
           <div className="bg-white rounded-full shadow-md py-3 px-4 md:px-6 -mt-8 mb-6 flex flex-wrap justify-center gap-3 md:gap-5">
             {[
-              { icon: <Truck className="w-4 h-4" />, text: "সারা দেশ ডেলিভারি" },
+              { icon: <Truck className="w-4 h-4" />, text: "সারা দেশে ডেলিভারি" },
               { icon: <span className="text-base">💵</span>, text: "ক্যাশ অন ডেলিভারি" },
               { icon: <CreditCard className="w-4 h-4" />, text: "কিস্তি সুবিধা" },
               { icon: <ShieldCheck className="w-4 h-4" />, text: "১০০% ট্রাস্টেড" },
@@ -732,7 +732,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
                   { icon: <ShieldCheck className="w-8 h-8 text-primary" />, title: "১০০% খাঁটি পণ্য", desc: "সতেজ মাছ-মাংস-সবজি ও অরিজিনাল বাসমতী" },
-                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশ ডেলিভারি", desc: "যশোর শহরে ফ্রি, অন্যান্য জেলায় ৳১৬০" },
+                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশে ডেলিভারি", desc: "যশোর শহরে ফ্রি, অন্যান্য জেলায় ৳১৬০" },
                   { icon: <CreditCard className="w-8 h-8 text-primary" />, title: "কিস্তি সুবিধা", desc: "টিভি, ফ্রিজ, AC, ফোন কিস্তিতে কিনুন" },
                   { icon: <Lightbulb className="w-8 h-8 text-primary" />, title: "ডিজিটাল সাপোর্ট", desc: "ওয়েব, এডস, গ্রাফিক্স, সফটওয়্যার" },
                 ].map((item, i) => (

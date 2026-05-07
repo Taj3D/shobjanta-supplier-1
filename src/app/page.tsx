@@ -822,6 +822,7 @@ export default function Home() {
           © ২০২৬ <strong>সবজান্তা সাপ্লাইয়ার</strong> – বিশ্বস্ত মাল্টি-ক্যাটাগরি স্টোর
         </p>
         <p className="mt-1">
+          <a href="https://shobjanta-supplier.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">🔥 বেস্ট অফার</a> &nbsp;|&nbsp;
           <a href="#products" className="text-primary hover:underline">প্রিমিয়াম পণ্য</a> &nbsp;|&nbsp;
           <a href="javascript:void(0)" onClick={() => setCodModalOpen(true)} className="text-primary hover:underline">রিটার্ন পলিসি</a> &nbsp;|&nbsp;
           <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-primary hover:underline">যোগাযোগ: +{WHATSAPP_NUMBER}</a>

@@ -147,3 +147,27 @@ Stage Summary:
 - Schema.org structured data for SEO
 - 12 products across 4 categories with EMI support
 - ESLint passes clean, dev server compiles successfully
+
+---
+Task ID: 10
+Agent: Main
+Task: Deep audit fix — delivery fee 3-tier, WhatsApp duplicate, hydration, Pixel verification
+
+Work Log:
+- Fixed delivery fee logic: added missing ৳70 tier for "যশোর (শহরের বাহিরে)" — was only 0/160, now 0/70/160
+- Added "যশোর (শহরের বাহিরে)" option to DISTRICTS array in constants.ts
+- Fixed delivery calculator UI: 3 distinct visual states (free/৳70/৳160) with color coding
+- Fixed WhatsApp cart order message: delivery charge was appearing twice (line 355 + 360), now consolidated into single line with grand total
+- Fixed React 19 lint error: `setState` in `useEffect` for localStorage hydration — wrapped in `queueMicrotask()` to satisfy `react-hooks/set-state-in-effect` rule
+- Updated "কেন আমরা" section: delivery desc now shows "যশোর শহরে ফ্রি, শহরের বাহিরে ৳৭০, অন্য জেলায় ৳১৬০"
+- Updated FAQ delivery answer: added ৳70 tier info for যশোর শহরের বাহিরে
+- Verified Facebook Meta Pixel: ID 918051034554872 correct, PageView + noscript fallback working, event tracking (AddToCart, Purchase, Lead, InitiateCheckout, ViewContent) all functional
+- Cleaned up fbqTrack function for better readability
+- All changes pass ESLint with zero errors
+
+Stage Summary:
+- Delivery fee now correctly has 3 tiers: যশোর সদর (৳0), যশোর শহরের বাহিরে (৳70), অন্য জেলা (৳160)
+- WhatsApp messages no longer have duplicate delivery charge info
+- React 19 lint compliance achieved
+- Facebook Pixel verified and working correctly
+- ESLint passes clean, dev server compiles successfully

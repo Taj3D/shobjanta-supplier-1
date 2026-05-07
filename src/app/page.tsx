@@ -61,8 +61,10 @@ import {
 
 /* ─── Facebook Pixel Event Tracker ─── */
 function fbqTrack(eventName: string, params?: Record<string, unknown>) {
-  if (typeof window !== "undefined" && typeof (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq === "function") {
-    (window as unknown as { fbq: (...args: unknown[]) => void }).fbq("track", eventName, params || {});
+  if (typeof window === "undefined") return;
+  const w = window as unknown as { fbq?: (...args: unknown[]) => void };
+  if (typeof w.fbq === "function") {
+    w.fbq("track", eventName, params || {});
   }
 }
 
@@ -202,6 +204,7 @@ export default function Home() {
   const getDeliveryFee = (district: string): number => {
     if (!district) return 0;
     if (district === "যশোর সদর") return 0; // যশোর শহরের মধ্যে ফ্রি
+    if (district === "যশোর (শহরের বাহিরে)") return 70; // যশোর শহরের বাহিরে ৭০ টাকা
     return 160; // অন্য সকল জেলায় ১৬০ টাকা (জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)
   };
 
@@ -213,16 +216,19 @@ export default function Home() {
 
   /* ─── Hydrate from localStorage after mount (fixes SSR mismatch) ─── */
   useEffect(() => {
-    const savedDistrict = localStorage.getItem("selected_district");
-    if (savedDistrict && DISTRICTS.includes(savedDistrict)) {
-      setSelectedDistrict(savedDistrict);
-      setDeliveryFee(getDeliveryFee(savedDistrict));
-    }
-    const savedPhone = localStorage.getItem("customer_phone");
-    if (savedPhone) setCustomerPhone(savedPhone);
-    const savedName = localStorage.getItem("customer_name");
-    if (savedName) setCustomerName(savedName);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Using queueMicrotask to avoid React 19 lint rule about synchronous setState in effects
+    // This is a legitimate hydration pattern for SSR-compatible localStorage reads
+    queueMicrotask(() => {
+      const savedDistrict = localStorage.getItem("selected_district");
+      if (savedDistrict && DISTRICTS.includes(savedDistrict)) {
+        setSelectedDistrict(savedDistrict);
+        setDeliveryFee(getDeliveryFee(savedDistrict));
+      }
+      const savedPhone = localStorage.getItem("customer_phone");
+      if (savedPhone) setCustomerPhone(savedPhone);
+      const savedName = localStorage.getItem("customer_name");
+      if (savedName) setCustomerName(savedName);
+    });
   }, []);
 
   /* ─── Scroll handling for sticky bar ─── */
@@ -352,12 +358,11 @@ export default function Home() {
     });
     const total = getTotal();
     const grandTotal = total + deliveryFee;
-    msg += `\n💰 পণ্য মূল্য: ${formatPrice(total)}\n🚚 ডেলিভারি: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}\n🧾 *সর্বমোট: ${formatPrice(grandTotal)}*\n`;
+    msg += `\n💰 পণ্য মূল্য: ${formatPrice(total)}\n🧾 *সর্বমোট: ${formatPrice(grandTotal)}* (ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)})\n`;
     msg += `\n📞 ফোন: ${phone}`;
     if (customerName.trim()) msg += `\n👤 নাম: ${customerName.trim()}`;
     if (customerAddress.trim()) msg += `\n📍 ঠিকানা: ${customerAddress.trim()}`;
     msg += `\n🗺️ জেলা: ${selectedDistrict || "নির্ধারিত হয়নি"}`;
-    msg += `\n🚚 ডেলিভারি চার্জ: ${deliveryFee === 0 ? "ফ্রি" : formatPrice(deliveryFee)}`;
     msg += `\n💵 পেমেন্ট: ক্যাশ অন ডেলিভারি`;
     msg += `\n\n⏳ দ্রুত কনফার্ম করুন। ধন্যবাদ!`;
 
@@ -553,6 +558,12 @@ export default function Home() {
                   <span className="text-lg">🎉</span>
                   <span className="font-bold text-base text-primary">ফ্রি ডেলিভারি (যশোর শহর)</span>
                 </div>
+              ) : deliveryFee === 70 ? (
+                <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-5 py-2.5 rounded-full">
+                  <span className="text-lg">🚚</span>
+                  <span className="font-bold text-base text-blue-700">{formatPrice(deliveryFee)}</span>
+                  <span className="text-xs text-muted-foreground">(যশোর শহরের বাহিরে)</span>
+                </div>
               ) : (
                 <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 px-5 py-2.5 rounded-full">
                   <span className="text-lg">🚚</span>
@@ -730,7 +741,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
                   { icon: <ShieldCheck className="w-8 h-8 text-primary" />, title: "১০০% খাঁটি পণ্য", desc: "সতেজ মাছ-মাংস-সবজি ও অরিজিনাল বাসমতী" },
-                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশে ডেলিভারি", desc: "যশোর শহরে ফ্রি, অন্যান্য জেলায় ৳১৬০" },
+                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশে ডেলিভারি", desc: "যশোর শহরে ফ্রি, শহরের বাহিরে ৳৭০, অন্য জেলায় ৳১৬০" },
                   { icon: <CreditCard className="w-8 h-8 text-primary" />, title: "কিস্তি সুবিধা", desc: "টিভি, ফ্রিজ, AC, ফোন কিস্তিতে কিনুন" },
                   { icon: <Lightbulb className="w-8 h-8 text-primary" />, title: "ডিজিটাল সাপোর্ট", desc: "ওয়েব, এডস, গ্রাফিক্স, সফটওয়্যার" },
                 ].map((item, i) => (

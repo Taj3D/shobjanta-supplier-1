@@ -438,7 +438,7 @@ export default function Home() {
         <div className="absolute inset-0 hero-pattern opacity-30 pointer-events-none" aria-hidden="true" />
         <div className="relative z-10">
           <motion.img
-            src="/images/logo.png"
+            src="/images/logo.webp"
             alt="সবজান্তা সাপ্লাইয়ার লোগো"
             className="max-w-[180px] mx-auto mb-6"
             initial={{ opacity: 0, scale: 0.8 }}

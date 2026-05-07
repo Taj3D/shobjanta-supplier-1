@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/* ─── Premium Bengali Fonts ─── */
+/* ─── Premium Bengali Fonts (optimized weights) ─── */
 const hindSiliguri = Hind_Siliguri({
   variable: "--font-bangla",
   subsets: ["bengali"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   preload: true,
 });
@@ -28,7 +28,7 @@ const hindSiliguri = Hind_Siliguri({
 const notoSansBengali = Noto_Sans_Bengali({
   variable: "--font-bangla-body",
   subsets: ["bengali"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   preload: true,
 });
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     "সবজি অনলাইন", "EMI ইলেকট্রনিক্স", "বাংলাদেশ শপিং",
   ],
   icons: {
-    icon: "/images/logo.png",
+    icon: "/images/logo.webp",
   },
   metadataBase: new URL(SITE_URL),
   alternates: {
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "সবজান্তা সাপ্লাইয়ার",
-    images: [{ url: "/images/rice-jar.png", width: 1200, height: 630, alt: "সবজান্তা সাপ্লাইয়ার" }],
+    images: [{ url: "/images/rice-jar.webp", width: 1200, height: 630, alt: "সবজান্তা সাপ্লাইয়ার" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "সবজান্তা সাপ্লাইয়ার",
     description: "মুদি পণ্য, ইলেকট্রনিক্স কিস্তিতে, ফ্যাশন ও ডিজিটাল সার্ভিস।",
-    images: ["/images/rice-jar.png"],
+    images: ["/images/rice-jar.webp"],
   },
   other: {
     "theme-color": "#2c7a47",
@@ -104,8 +104,8 @@ function SchemaMarkup() {
     name: "সবজান্তা সাপ্লাইয়ার",
     description: "মুদি পণ্য, ইলেকট্রনিক্স (কিস্তিতে), ফ্যাশন ও ডিজিটাল সার্ভিস",
     url: SITE_URL,
-    logo: `${SITE_URL}/images/logo.png`,
-    image: `${SITE_URL}/images/rice-jar.png`,
+    logo: `${SITE_URL}/images/logo.webp`,
+    image: `${SITE_URL}/images/rice-jar.webp`,
     telephone: "+8801711731354",
     address: {
       "@type": "PostalAddress",
@@ -135,7 +135,7 @@ function SchemaMarkup() {
         item: {
           "@type": "Product",
           name: "প্রিমিয়াম পাকিস্তানি বাসমতী চাল (৩ কেজি জার)",
-          image: `${SITE_URL}/images/rice-jar.png`,
+          image: `${SITE_URL}/images/rice-jar.webp`,
           description: "খাঁটি পাকিস্তানি বাসমতী চাল, এয়ারটাইট জারে ৩ কেজি",
           brand: { "@type": "Brand", name: "সবজান্তা সাপ্লাইয়ার" },
           offers: { "@type": "Offer", price: "1250", priceCurrency: "BDT", availability: "https://schema.org/InStock" },
@@ -147,7 +147,7 @@ function SchemaMarkup() {
         item: {
           "@type": "Product",
           name: '৪৩" স্মার্ট টিভি',
-          image: `${SITE_URL}/images/smart-tv.png`,
+          image: `${SITE_URL}/images/smart-tv.webp`,
           description: "৪৩ ইঞ্চি স্মার্ট টিভি - কিস্তিতে পাওয়া যায়",
           brand: { "@type": "Brand", name: "সবজান্তা সাপ্লাইয়ার" },
           offers: { "@type": "Offer", price: "37999", priceCurrency: "BDT", availability: "https://schema.org/InStock" },
@@ -159,7 +159,7 @@ function SchemaMarkup() {
         item: {
           "@type": "Product",
           name: "ডাবল ডোর ফ্রিজ (২৬০ লিটার)",
-          image: `${SITE_URL}/images/fridge.png`,
+          image: `${SITE_URL}/images/fridge.webp`,
           description: "ডাবল ডোর ফ্রিজ - কিস্তিতে পাওয়া যায়",
           brand: { "@type": "Brand", name: "সবজান্তা সাপ্লাইয়ার" },
           offers: { "@type": "Offer", price: "42999", priceCurrency: "BDT", availability: "https://schema.org/InStock" },
@@ -171,7 +171,7 @@ function SchemaMarkup() {
         item: {
           "@type": "Product",
           name: "সতেজ ইলিশ মাছ (১ কেজি)",
-          image: `${SITE_URL}/images/fish.png`,
+          image: `${SITE_URL}/images/fish.webp`,
           description: "সতেজ ইলিশ মাছ হোম ডেলিভারি",
           brand: { "@type": "Brand", name: "সবজান্তা সাপ্লাইয়ার" },
           offers: { "@type": "Offer", price: "1400", priceCurrency: "BDT", availability: "https://schema.org/InStock" },

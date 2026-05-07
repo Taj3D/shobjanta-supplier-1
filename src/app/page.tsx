@@ -193,7 +193,9 @@ export default function Home() {
   const [deliveryFee, setDeliveryFee] = useState(() => {
     if (typeof window === "undefined") return 0;
     const saved = localStorage.getItem("selected_district");
-    return saved === "যশোর সদর" ? 0 : saved ? 70 : 0;
+    if (!saved) return 0;
+    if (saved === "যশোর সদর") return 0;
+    return 160; // যশোর সদর ছাড়া অন্য সকল জেলা ১৬০ টাকা
   });
 
   // Sticky bar
@@ -221,10 +223,15 @@ export default function Home() {
   });
 
   /* ─── Delivery Fee ─── */
+  const getDeliveryFee = (district: string): number => {
+    if (!district) return 0;
+    if (district === "যশোর সদর") return 0; // যশোর শহরের মধ্যে ফ্রি
+    return 160; // অন্য সকল জেলায় ১৬০ টাকা (জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)
+  };
+
   const handleDistrictChange = (value: string) => {
     setSelectedDistrict(value);
-    const fee = value === "যশোর সদর" ? 0 : 70;
-    setDeliveryFee(fee);
+    setDeliveryFee(getDeliveryFee(value));
     localStorage.setItem("selected_district", value);
   };
 
@@ -513,8 +520,8 @@ export default function Home() {
               {!selectedDistrict
                 ? "নির্বাচন করুন"
                 : deliveryFee === 0
-                  ? "ফ্রি (যশোর)"
-                  : `${formatPrice(deliveryFee)}`}
+                  ? "ফ্রি (যশোর শহর)"
+                  : `${formatPrice(deliveryFee)} (জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)`}
             </p>
           </div>
         </AnimatedSection>
@@ -585,7 +592,14 @@ export default function Home() {
                     {/* Badges */}
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {product.offerBadge && (
-                        <Badge className="bg-[#ff8c1a] text-white rounded-full text-[10px] font-bold px-2.5 py-0.5">
+                        <Badge
+                          className="bg-[#ff8c1a] text-white rounded-full text-[10px] font-bold px-2.5 py-0.5 cursor-pointer hover:bg-[#e67e22] transition-colors"
+                          onClick={() => {
+                            if (product.offerLink) {
+                              window.open(product.offerLink, "_blank", "noopener,noreferrer");
+                            }
+                          }}
+                        >
                           {product.offerBadge}
                         </Badge>
                       )}
@@ -678,7 +692,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
                   { icon: <ShieldCheck className="w-8 h-8 text-primary" />, title: "১০০% খাঁটি পণ্য", desc: "সতেজ মাছ-মাংস-সবজি ও অরিজিনাল বাসমতী" },
-                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশ ডেলিভারি", desc: "যশোরে ফ্রি, অন্যান্য জেলায় ৳৭০" },
+                  { icon: <Truck className="w-8 h-8 text-primary" />, title: "সারা দেশ ডেলিভারি", desc: "যশোর শহরে ফ্রি, অন্যান্য জেলায় ৳১৬০" },
                   { icon: <CreditCard className="w-8 h-8 text-primary" />, title: "কিস্তি সুবিধা", desc: "টিভি, ফ্রিজ, AC, ফোন কিস্তিতে কিনুন" },
                   { icon: <Lightbulb className="w-8 h-8 text-primary" />, title: "ডিজিটাল সাপোর্ট", desc: "ওয়েব, এডস, গ্রাফিক্স, সফটওয়্যার" },
                 ].map((item, i) => (
@@ -1057,7 +1071,7 @@ export default function Home() {
             পণ্য হাতে পাওয়ার পর টাকা প্রদান করুন। ১০০% নিরাপদ ও বিশ্বস্ত।
           </p>
           <p className="text-xs text-muted-foreground">
-            যশোরে ফ্রি ডেলিভারি, অন্যান্য জেলায় মাত্র ৳৭০।
+            যশোর শহরে ফ্রি ডেলিভারি, অন্যান্য জেলায় ৳১৬০ (জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)।
           </p>
           <Button onClick={() => setCodModalOpen(false)} className="bg-primary hover:bg-primary/90 text-white rounded-full font-bold">
             বুঝলাম

@@ -11,6 +11,7 @@ export interface Product {
   priceLabel?: string;
   image: string;
   offerBadge?: string;
+  offerLink?: string;
   stockBadge?: string;
   showCod?: boolean;
   showEmi?: boolean;
@@ -27,7 +28,7 @@ export const PRODUCTS: Product[] = [
     oldPrice: 1750,
     image: "/images/rice-jar.png",
     offerBadge: "BEST OFFER",
-    stockBadge: "মাত্র ১৫টি বাকি!",
+    offerLink: "https://shobjanta-supplier.vercel.app/",
     showCod: true,
     category: "grocery",
   },
@@ -217,7 +218,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: "ডেলিভারি কতদিন লাগে?",
-    answer: "যশোর: ২৪ ঘণ্টা, ঢাকা/চট্টগ্রাম: ২-৩ দিন, অন্যান্য জেলা: ৩-৫ দিন। মাছ/মাংস/সবজি: যশোরে একই দিনে। কুরিয়ার পার্টনার: পাথাও, সন্দরবন, রেডএক্স।",
+    answer: "যশোর শহরের মধ্যে: ২৪ ঘণ্টা (ফ্রি ডেলিভারি), অন্যান্য জেলা: ৩-৫ দিন (৳১৬০, জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)। মাছ/মাংস/সবজি: যশোরে একই দিনে। কুরিয়ার পার্টনার: পাথাও, সন্দরবন, রেডএক্স।",
   },
   {
     question: "মাছ, মাংস ও সবজি সতেজ পাবো?",

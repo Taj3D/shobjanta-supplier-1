@@ -576,14 +576,14 @@ export default function Home() {
                   className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col group"
                 >
                   {/* Image */}
-                  <div className="aspect-[4/3] overflow-hidden bg-green-50/50">
+                  <div className="aspect-square overflow-hidden bg-gradient-to-b from-white to-green-50/40 p-3 md:p-4">
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-sm"
                       loading="lazy"
                       width={400}
-                      height={300}
+                      height={400}
                     />
                   </div>
 

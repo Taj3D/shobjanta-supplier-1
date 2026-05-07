@@ -430,9 +430,24 @@ export default function Home() {
             width={180}
             height={60}
           />
-          <h1 className="gradient-text text-2xl md:text-4xl lg:text-5xl font-extrabold mb-4 max-w-4xl mx-auto leading-tight">
-            মুদি, মাছ-মাংস, ইলেকট্রনিক্স (কিস্তি) ও ডিজিটাল সার্ভিস — এক ছাদের নিচে
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-4 max-w-4xl mx-auto leading-tight">
+            <span className="gradient-text">সবকিছু এক ছাদের নিচে</span>
           </h1>
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
+            {[
+              { icon: "🍚", label: "মুদি" },
+              { icon: "🐟", label: "মাছ-মাংস" },
+              { icon: "📺", label: "ইলেকট্রনিক্স (কিস্তি)" },
+              { icon: "💻", label: "ডিজিটাল সার্ভিস" },
+            ].map((cat, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1 bg-white/70 backdrop-blur-sm border border-primary/20 rounded-full px-3 py-1.5 text-xs md:text-sm font-bold text-primary shadow-sm"
+              >
+                {cat.icon} {cat.label}
+              </span>
+            ))}
+          </div>
           <p className="text-foreground/70 text-sm md:text-base mb-3">
             🚚 সারা দেশ ডেলিভারি &nbsp;|&nbsp; 💵 ক্যাশ অন ডেলিভারি &nbsp;|&nbsp; 🟢 ২৪/৭ হোয়াটসঅ্যাপ সাপোর্ট
           </p>

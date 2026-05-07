@@ -44,13 +44,6 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart-store";
 import {
@@ -498,31 +491,45 @@ export default function Home() {
 
         {/* ─── DELIVERY CALCULATOR ─── */}
         <AnimatedSection delay={0.15}>
-          <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm mb-8">
-            <label className="font-bold text-sm md:text-base flex items-center justify-center gap-2 mb-3">
-              <MapPin className="w-4 h-4 text-primary" />
+          <div className="bg-white rounded-2xl p-5 md:p-6 text-center shadow-sm mb-8 border border-green-100">
+            <label className="font-bold text-sm md:text-base flex items-center justify-center gap-2 mb-4">
+              <MapPin className="w-5 h-5 text-primary" />
               আপনার জেলা নির্বাচন করুন (ডেলিভারি চার্জ জানতে):
             </label>
-            <Select value={selectedDistrict} onValueChange={handleDistrictChange}>
-              <SelectTrigger className="w-full max-w-xs mx-auto rounded-full border-2 border-border">
-                <SelectValue placeholder="-- জেলা নির্বাচন করুন --" />
-              </SelectTrigger>
-              <SelectContent>
-                {DISTRICTS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="mt-3 font-bold text-base md:text-lg text-primary">
-              ডেলিভারি চার্জ:{" "}
-              {!selectedDistrict
-                ? "নির্বাচন করুন"
-                : deliveryFee === 0
-                  ? "ফ্রি (যশোর শহর)"
-                  : `${formatPrice(deliveryFee)} (জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)`}
-            </p>
+            <select
+              value={selectedDistrict}
+              onChange={(e) => handleDistrictChange(e.target.value)}
+              className="w-full max-w-xs mx-auto block rounded-full border-2 border-primary/30 bg-white px-4 py-2.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary appearance-none cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c7a47' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6.5 6.5-6.5'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 16px center',
+                backgroundSize: '12px',
+              }}
+            >
+              <option value="">-- জেলা নির্বাচন করুন --</option>
+              {DISTRICTS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <div className="mt-4">
+              {!selectedDistrict ? (
+                <p className="text-sm text-muted-foreground">👆 জেলা নির্বাচন করুন</p>
+              ) : deliveryFee === 0 ? (
+                <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-5 py-2.5 rounded-full">
+                  <span className="text-lg">🎉</span>
+                  <span className="font-bold text-base text-primary">ফ্রি ডেলিভারি (যশোর শহর)</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 px-5 py-2.5 rounded-full">
+                  <span className="text-lg">🚚</span>
+                  <span className="font-bold text-base text-foreground">{formatPrice(deliveryFee)}</span>
+                  <span className="text-xs text-muted-foreground">(জরুরি পণ্যের কোয়ান্টিটির উপর নির্ভর)</span>
+                </div>
+              )}
+            </div>
           </div>
         </AnimatedSection>
 

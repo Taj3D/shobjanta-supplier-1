@@ -724,7 +724,7 @@ export default function Home() {
 
             {/* Combo Offer */}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center mt-6 font-bold text-sm">
-              🎁 ২টি বাসমতী চাল (৩ কেজি) কিনলে → ফ্রি ডেলিভারি + ৫% অতিরিক্ত ছাড়
+              🎁 ২টি জার প্রিমিয়াম পাকিস্তানি বাসমতী চাল (৩+৩ কেজি) কিনলে → ফ্রি ডেলিভারি সীমিত সময়ের জন্য
             </div>
 
             {/* EMI Info Banner */}

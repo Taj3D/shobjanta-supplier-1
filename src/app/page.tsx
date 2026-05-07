@@ -176,19 +176,9 @@ export default function Home() {
   // Category filter
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  // Delivery - lazy init from localStorage
-  const [selectedDistrict, setSelectedDistrict] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const saved = localStorage.getItem("selected_district");
-    return saved && DISTRICTS.includes(saved) ? saved : "";
-  });
-  const [deliveryFee, setDeliveryFee] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const saved = localStorage.getItem("selected_district");
-    if (!saved) return 0;
-    if (saved === "যশোর সদর") return 0;
-    return 160; // যশোর সদর ছাড়া অন্য সকল জেলা ১৬০ টাকা
-  });
+  // Delivery - init with SSR-safe defaults, hydrate from localStorage in useEffect
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   // Sticky bar
   const [showStickyBar, setShowStickyBar] = useState(true);
@@ -204,15 +194,9 @@ export default function Home() {
   // Phone resolve ref
   const resolvePhoneRef = useRef<((phone: string | null) => void) | null>(null);
 
-  // Customer info lazy init
-  const [customerPhone, setCustomerPhone] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem("customer_phone") || "";
-  });
-  const [customerName, setCustomerName] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem("customer_name") || "";
-  });
+  // Customer info - init with SSR-safe defaults, hydrate from localStorage in useEffect
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState("");
 
   /* ─── Delivery Fee ─── */
   const getDeliveryFee = (district: string): number => {
@@ -226,6 +210,20 @@ export default function Home() {
     setDeliveryFee(getDeliveryFee(value));
     localStorage.setItem("selected_district", value);
   };
+
+  /* ─── Hydrate from localStorage after mount (fixes SSR mismatch) ─── */
+  useEffect(() => {
+    const savedDistrict = localStorage.getItem("selected_district");
+    if (savedDistrict && DISTRICTS.includes(savedDistrict)) {
+      setSelectedDistrict(savedDistrict);
+      setDeliveryFee(getDeliveryFee(savedDistrict));
+    }
+    const savedPhone = localStorage.getItem("customer_phone");
+    if (savedPhone) setCustomerPhone(savedPhone);
+    const savedName = localStorage.getItem("customer_name");
+    if (savedName) setCustomerName(savedName);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ─── Scroll handling for sticky bar ─── */
   useEffect(() => {

@@ -880,27 +880,9 @@ export default function Home() {
 
       {/* ═══════════════════ FLOATING ELEMENTS ═══════════════════ */}
 
-      {/* Floating Cart Icon */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1, type: "spring", stiffness: 200 }}
-        onClick={() => setCartOpen(true)}
-        className="fixed bottom-40 right-4 md:bottom-44 md:right-6 z-40 bg-primary w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform text-white"
-        role="button"
-        tabIndex={0}
-        aria-label="কার্ট খুলুন"
-      >
-        <ShoppingCart className="w-6 h-6" />
-        {mounted && itemCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-[#e74c3c] text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center font-bold">
-            {itemCount}
-          </span>
-        )}
-      </motion.div>
-
-      {/* Floating WhatsApp & Call Buttons */}
-      <div className="fixed bottom-20 right-4 md:bottom-24 md:right-6 flex flex-col gap-3 z-40">
+      {/* Floating Action Buttons — Order from bottom: WhatsApp → Call → Cart */}
+      <div className="fixed bottom-20 right-4 md:bottom-24 md:right-6 flex flex-col-reverse gap-3 z-40">
+        {/* WhatsApp */}
         <motion.a
           href="#"
           onClick={(e) => {
@@ -909,22 +891,41 @@ export default function Home() {
           }}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
+          transition={{ delay: 1, type: "spring", stiffness: 200 }}
           className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
           aria-label="WhatsApp এ মেসেজ করুন"
         >
           <MessageCircle className="w-6 h-6" />
         </motion.a>
+        {/* Call */}
         <motion.a
           href={`tel:+${WHATSAPP_NUMBER}`}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 1.4, type: "spring", stiffness: 200 }}
+          transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
           className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#0b65c2] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
           aria-label="কল করুন"
         >
           <Phone className="w-6 h-6" />
         </motion.a>
+        {/* Cart */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 1.4, type: "spring", stiffness: 200 }}
+          onClick={() => setCartOpen(true)}
+          className="bg-primary w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform text-white relative"
+          role="button"
+          tabIndex={0}
+          aria-label="কার্ট খুলুন"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          {mounted && itemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#e74c3c] text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center font-bold">
+              {itemCount}
+            </span>
+          )}
+        </motion.div>
       </div>
 
       {/* Sticky Bottom Bar */}

@@ -152,6 +152,11 @@ function openWhatsApp(message: string) {
 export default function Home() {
   const { items, addItem, removeItem, updateQuantity, clearCart, getTotal, getItemCount } = useCartStore();
 
+  // Hydration guard: don't render localStorage-dependent UI until client mounts
+  const hasMounted = useRef(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { queueMicrotask(() => { if (!hasMounted.current) { hasMounted.current = true; setMounted(true); } }); }, []);
+
   // Modal states
   const [cartOpen, setCartOpen] = useState(false);
   const [qtyModalOpen, setQtyModalOpen] = useState(false);
@@ -887,7 +892,7 @@ export default function Home() {
         aria-label="কার্ট খুলুন"
       >
         <ShoppingCart className="w-6 h-6" />
-        {itemCount > 0 && (
+        {mounted && itemCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-[#e74c3c] text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center font-bold">
             {itemCount}
           </span>
